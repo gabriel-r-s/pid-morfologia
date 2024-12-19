@@ -30,9 +30,14 @@ int main(int, char **) {
 
         ImGui::Text("Image:");
         ImGui::SameLine();
-        ImGui::InputText("##image_path", image_path, sizeof(image_path));
+        bool load_image = false;
+        load_image |=
+            ImGui::InputText("##image_path", image_path, sizeof(image_path),
+                             ImGuiInputTextFlags_EnterReturnsTrue);
         ImGui::SameLine();
-        if (ImGui::Button("Load")) {
+        load_image |= ImGui::Button("Load");
+
+        if (load_image) {
             failed_load = !app.load_image(image_path);
         }
         if (failed_load) {
