@@ -41,18 +41,17 @@ int main(int, char **) {
         }
 
         ImGui::Text("Adjust:");
-        if (ImGui::RadioButton("Adjust Width",
-                               app.get_adjust() == Adjust_Width)) {
+        ImGui::Indent();
+        if (ImGui::RadioButton("Width", app.get_adjust() == Adjust_Width)) {
             app.set_adjust(Adjust_Width);
         }
-        if (ImGui::RadioButton("Adjust Height",
-                               app.get_adjust() == Adjust_Height)) {
+        if (ImGui::RadioButton("Height", app.get_adjust() == Adjust_Height)) {
             app.set_adjust(Adjust_Height);
         }
-        if (ImGui::RadioButton("Adjust Fill",
-                               app.get_adjust() == Adjust_Fill)) {
+        if (ImGui::RadioButton("Fill", app.get_adjust() == Adjust_Fill)) {
             app.set_adjust(Adjust_Fill);
         }
+        ImGui::Unindent();
 
         if (ImGui::Button("Quit")) {
             running = false;
