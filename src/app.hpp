@@ -2,6 +2,7 @@
 #include "sdlg.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <cstdint>
 
 enum Adjust {
     Adjust_Height,
@@ -15,20 +16,35 @@ class App {
     SDL_Rect image_rect;
     int image_w, image_h;
     Adjust adjust;
-    std::vector<bool> kernel;
-    size_t kernel_width;
 
   public:
+    std::vector<uint8_t> kernel;
+    size_t kernel_width, kernel_height;
+
     App(Sdl *sdl)
         : sdl(sdl), image(nullptr), processed(nullptr),
-          image_rect({0, 0, 0, 0}), adjust(Adjust_Height), kernel_width(3) {
+          image_rect({0, 0, 0, 0}), adjust(Adjust_Height) {
         kernel = {0, 1, 0, 1, 1, 1, 0, 1, 0};
+        kernel_width = 3;
+        kernel_height = 3;
     }
 
     ~App() {
         SDL_DestroyTexture(image);
         SDL_DestroyTexture(processed);
     }
+
+    void resize_kernel(size_t w, size_t h) {
+        if (w == 0 || h == 0) {
+            return;
+        }
+        kernel_width = w;
+        kernel_height = h;
+        kernel.clear();
+        kernel.resize(w * h);
+    }
+
+    void apply_kernel() {}
 
     Adjust get_adjust() { return adjust; }
 
