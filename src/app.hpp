@@ -3,17 +3,25 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+enum Adjust {
+    Adjust_Height,
+    Adjust_Width,
+    Adjust_Fill,
+};
+
 class App {
     Sdl *sdl;
     SDL_Texture *image, *processed;
     SDL_Rect image_rect;
+    int image_w, image_h;
+    Adjust adjust;
     std::vector<bool> kernel;
     size_t kernel_width;
 
   public:
     App(Sdl *sdl)
         : sdl(sdl), image(nullptr), processed(nullptr),
-          image_rect({0, 0, 0, 0}), kernel_width(3) {
+          image_rect({0, 0, 0, 0}), adjust(Adjust_Height), kernel_width(3) {
         kernel = {0, 1, 0, 1, 1, 1, 0, 1, 0};
     }
 
@@ -22,21 +30,31 @@ class App {
         SDL_DestroyTexture(processed);
     }
 
-    void reset_image() {
-        SDL_SetRenderTarget(sdl->renderer, processed);
-        SDL_RenderCopy(sdl->renderer, image, nullptr, nullptr);
-        SDL_SetRenderTarget(sdl->renderer, nullptr);
-    }
+    Adjust get_adjust() { return adjust; }
 
-    void adjust_image_rect(int w, int h) {
-        float ratio = float(h) / sdl->height;
+    void set_adjust(Adjust val) {
+        adjust = val;
+        float ratio;
+        if (adjust == Adjust_Height) {
+            ratio = float(image_h) / sdl->height;
+        } else if (adjust == Adjust_Width) {
+            ratio = float(image_w) / sdl->width;
+        } else {
+            ratio = 1.0;
+        }
 
-        float new_w = w / ratio;
-        float new_h = h / ratio;
+        float new_w = image_w / ratio;
+        float new_h = image_h / ratio;
         float new_x = (sdl->width - new_w) / 2;
         float new_y = (sdl->height - new_h) / 2;
 
         image_rect = {int(new_x), int(new_y), int(new_w), int(new_h)};
+    }
+
+    void reset_image() {
+        SDL_SetRenderTarget(sdl->renderer, processed);
+        SDL_RenderCopy(sdl->renderer, image, nullptr, nullptr);
+        SDL_SetRenderTarget(sdl->renderer, nullptr);
     }
 
     bool load_image(const char *path) {
@@ -52,7 +70,9 @@ class App {
         SDL_QueryTexture(image, nullptr, nullptr, &w, &h);
         processed = SDL_CreateTexture(sdl->renderer, SDL_PIXELFORMAT_RGBA8888,
                                       SDL_TEXTUREACCESS_TARGET, w, h);
-        adjust_image_rect(w, h);
+        image_w = w;
+        image_h = h;
+        set_adjust(adjust);
         reset_image();
         return true;
     }
@@ -61,6 +81,7 @@ class App {
         if (processed == nullptr) {
             return;
         }
-        SDL_RenderCopy(sdl->renderer, processed, nullptr, &image_rect);
+        SDL_Rect *adjust_rect = (adjust == Adjust_Fill) ? nullptr : &image_rect;
+        SDL_RenderCopy(sdl->renderer, processed, nullptr, adjust_rect);
     }
 };

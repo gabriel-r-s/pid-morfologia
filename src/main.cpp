@@ -40,6 +40,20 @@ int main(int, char **) {
             ImGui::Text("(failed to load)");
         }
 
+        ImGui::Text("Adjust:");
+        if (ImGui::RadioButton("Adjust Width",
+                               app.get_adjust() == Adjust_Width)) {
+            app.set_adjust(Adjust_Width);
+        }
+        if (ImGui::RadioButton("Adjust Height",
+                               app.get_adjust() == Adjust_Height)) {
+            app.set_adjust(Adjust_Height);
+        }
+        if (ImGui::RadioButton("Adjust Fill",
+                               app.get_adjust() == Adjust_Fill)) {
+            app.set_adjust(Adjust_Fill);
+        }
+
         if (ImGui::Button("Quit")) {
             running = false;
         }
