@@ -1,3 +1,6 @@
+#ifndef SDLG_HPP
+#define SDLG_HPP
+
 #include "imgui/backends/imgui_impl_sdl2.h"
 #include "imgui/backends/imgui_impl_sdlrenderer2.h"
 #include "imgui/imgui.h"
@@ -22,7 +25,6 @@ void imgui_render() {
 struct Sdl {
     SDL_Window *window;
     SDL_Renderer *renderer;
-    SDL_Texture *texture;
     SDL_Event event;
     int width, height;
     int mousex, mousey;
@@ -37,8 +39,6 @@ struct Sdl {
         renderer = SDL_CreateRenderer(
             window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
         SDL_GetRendererOutputSize(renderer, &width, &height);
-        texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
-                                    SDL_TEXTUREACCESS_TARGET, width, height);
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO &io = ImGui::GetIO();
@@ -52,7 +52,6 @@ struct Sdl {
         ImGui_ImplSDLRenderer2_Shutdown();
         ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
-        SDL_DestroyTexture(texture);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_Quit();
@@ -97,3 +96,5 @@ struct Sdl {
                 event.window.windowID == SDL_GetWindowID(window));
     }
 };
+
+#endif

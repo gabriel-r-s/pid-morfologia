@@ -1,7 +1,12 @@
 #include "sdlg.hpp"
+#include "app.hpp"
 
 int main(int, char **) {
     Sdl sdl;
+    App app(&sdl);
+
+    char image_path[1024] = "images/linuxmint_hawaii.jpg";
+    bool failed_load = false;
 
     bool running = true;
     while (running) {
@@ -22,11 +27,25 @@ int main(int, char **) {
         }
         imgui_new_frame();
         ImGui::Begin("Menu");
+
+        ImGui::Text("Image:");
+        ImGui::SameLine();
+        ImGui::InputText("##image_path", image_path, sizeof(image_path));
+        ImGui::SameLine();
+        if (ImGui::Button("Load")) {
+            failed_load = !app.load_image(image_path);
+        }
+        if (failed_load) {
+            ImGui::SameLine();
+            ImGui::Text("(failed to load)");
+        }
+
         if (ImGui::Button("Quit")) {
             running = false;
         }
         ImGui::End();
         sdl.clear();
+        app.draw();
         sdl.draw();
     }
 }

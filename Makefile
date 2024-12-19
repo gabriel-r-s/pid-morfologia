@@ -2,7 +2,7 @@ CXX := g++
 CXXFLAGS := -O3 -Wall -Werror
 
 exec := -o build/main
-libs := -lSDL2
+libs := -lSDL2 -lSDL2_image
 src := src/main.cpp
 objects := $(shell echo build/*.o)
 includes := -Isrc/imgui
