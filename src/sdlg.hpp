@@ -11,15 +11,11 @@
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
 
-void imgui_new_frame() {
+void imgui_begin() {
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
-}
-
-void imgui_render() {
-    ImGui::Render();
-    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 }
 
 struct Sdl {
@@ -62,7 +58,8 @@ struct Sdl {
     }
 
     void draw() {
-        imgui_render();
+        ImGui::Render();
+        ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
         SDL_RenderPresent(renderer);
     }
 

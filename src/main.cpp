@@ -30,8 +30,7 @@ int main(int, char **) {
                 }
             }
         }
-        imgui_new_frame();
-        ImGui::Begin("Menu");
+        imgui_begin();
 
         ImGui::Text("Image:");
         ImGui::SameLine();
@@ -64,6 +63,10 @@ int main(int, char **) {
                 app.set_adjust(Adjust_Fit);
             }
             ImGui::SameLine();
+            if (ImGui::RadioButton("Fill", app.get_adjust() == Adjust_Fill)) {
+                app.set_adjust(Adjust_Fill);
+            }
+            ImGui::SameLine();
             if (ImGui::RadioButton("Width", app.get_adjust() == Adjust_Width)) {
                 app.set_adjust(Adjust_Width);
             }
@@ -71,10 +74,6 @@ int main(int, char **) {
             if (ImGui::RadioButton("Height",
                                    app.get_adjust() == Adjust_Height)) {
                 app.set_adjust(Adjust_Height);
-            }
-            ImGui::SameLine();
-            if (ImGui::RadioButton("Fill", app.get_adjust() == Adjust_Fill)) {
-                app.set_adjust(Adjust_Fill);
             }
             ImGui::Unindent();
         }
