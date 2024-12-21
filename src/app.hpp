@@ -8,6 +8,7 @@ enum Adjust {
     Adjust_Height,
     Adjust_Width,
     Adjust_Fill,
+    Adjust_Fit,
 };
 
 class App {
@@ -50,17 +51,45 @@ class App {
 
     void set_adjust(Adjust val) {
         adjust = val;
-        float ratio;
-        if (adjust == Adjust_Height) {
-            ratio = float(image_h) / sdl->height;
-        } else if (adjust == Adjust_Width) {
-            ratio = float(image_w) / sdl->width;
-        } else {
-            ratio = 1.0;
+        readjust();
+    }
+
+    void readjust() {
+        float new_w, new_h;
+
+        switch (adjust) {
+        case Adjust_Height:
+            new_w = float(image_w) * sdl->height / image_h;
+            new_h = sdl->height;
+            break;
+        case Adjust_Width:
+            new_w = sdl->width;
+            new_h = float(image_h) * sdl->width / image_w;
+            break;
+        case Adjust_Fit: {
+            float new_w_ah = float(image_w) * sdl->height / image_h;
+            float new_h_ah = sdl->height;
+
+            float new_w_aw = sdl->width;
+            float new_h_aw = float(image_h) * sdl->width / image_w;
+
+            if (new_w_ah > sdl->width) {
+                new_w = new_w_aw;
+                new_h = new_h_aw;
+            } else {
+                new_w = new_w_ah;
+                new_h = new_h_ah;
+            }
+
+            break;
+        }
+        case Adjust_Fill:
+        default:
+            new_w = sdl->width;
+            new_h = sdl->height;
+            break;
         }
 
-        float new_w = image_w / ratio;
-        float new_h = image_h / ratio;
         float new_x = (sdl->width - new_w) / 2;
         float new_y = (sdl->height - new_h) / 2;
 

@@ -12,6 +12,9 @@ int main(int, char **) {
 
     bool running = true;
     while (running) {
+        SDL_GetRendererOutputSize(sdl.renderer, &sdl.width, &sdl.height);
+        app.readjust();
+
         while (sdl.poll_event()) {
             if (sdl.is_quit_event()) {
                 running = false;
@@ -68,6 +71,10 @@ int main(int, char **) {
             ImGui::SameLine();
             if (ImGui::RadioButton("Fill", app.get_adjust() == Adjust_Fill)) {
                 app.set_adjust(Adjust_Fill);
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Fit", app.get_adjust() == Adjust_Fit)) {
+                app.set_adjust(Adjust_Fit);
             }
             ImGui::Unindent();
         }

@@ -34,11 +34,9 @@ struct Sdl {
 #ifdef SDL_HINT_IME_SHOW_UI
         SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 #endif
-        window =
-            SDL_CreateWindow("main", 0, 0, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        window = SDL_CreateWindow("main", 0, 0, 800, 450, SDL_WINDOW_RESIZABLE);
         renderer = SDL_CreateRenderer(
             window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-        SDL_GetRendererOutputSize(renderer, &width, &height);
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO &io = ImGui::GetIO();
@@ -46,6 +44,7 @@ struct Sdl {
         ImGui::StyleColorsDark();
         ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
         ImGui_ImplSDLRenderer2_Init(renderer);
+        SDL_GetRendererOutputSize(renderer, &width, &height);
     }
 
     ~Sdl() {
