@@ -24,7 +24,7 @@ class App {
 
     App(Sdl *sdl)
         : sdl(sdl), image(nullptr), processed(nullptr),
-          image_rect({0, 0, 0, 0}), adjust(Adjust_Height) {
+          image_rect({0, 0, 0, 0}), adjust(Adjust_Fit) {
         kernel = {0, 1, 0, 1, 1, 1, 0, 1, 0};
         kernel_width = 3;
         kernel_height = 3;

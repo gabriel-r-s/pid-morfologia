@@ -60,6 +60,10 @@ int main(int, char **) {
 
         if (ImGui::CollapsingHeader("Adjust", ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::Indent();
+            if (ImGui::RadioButton("Fit", app.get_adjust() == Adjust_Fit)) {
+                app.set_adjust(Adjust_Fit);
+            }
+            ImGui::SameLine();
             if (ImGui::RadioButton("Width", app.get_adjust() == Adjust_Width)) {
                 app.set_adjust(Adjust_Width);
             }
@@ -71,10 +75,6 @@ int main(int, char **) {
             ImGui::SameLine();
             if (ImGui::RadioButton("Fill", app.get_adjust() == Adjust_Fill)) {
                 app.set_adjust(Adjust_Fill);
-            }
-            ImGui::SameLine();
-            if (ImGui::RadioButton("Fit", app.get_adjust() == Adjust_Fit)) {
-                app.set_adjust(Adjust_Fit);
             }
             ImGui::Unindent();
         }
