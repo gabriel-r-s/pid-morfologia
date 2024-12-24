@@ -6,7 +6,7 @@ int main(int, char **) {
     Sdl sdl;
     App app(&sdl);
 
-    char image_path[1024] = "images/linuxmint_hawaii.jpg";
+    char image_path[1024] = "images/linuxmint_ireland.jpg";
     bool failed_load = false;
     int kernel_dim[2] = {int(app.kernel_width), int(app.kernel_height)};
 
@@ -31,6 +31,9 @@ int main(int, char **) {
             }
         }
         imgui_begin();
+        if (ImGui::Button("Quit")) {
+            running = false;
+        }
 
         ImGui::Text("Image:");
         ImGui::SameLine();
@@ -57,23 +60,31 @@ int main(int, char **) {
             failed_load = !app.load_image(image_path);
         }
 
-        if (ImGui::CollapsingHeader("Adjust", ImGuiTreeNodeFlags_DefaultOpen)) {
+        if (ImGui::CollapsingHeader("Zoom & Pan",
+                                    ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::Indent();
-            if (ImGui::RadioButton("Fit", app.get_adjust() == Adjust_Fit)) {
-                app.set_adjust(Adjust_Fit);
+            if (ImGui::Button("-")) {
+                app.add_zoom(1.0);
             }
             ImGui::SameLine();
-            if (ImGui::RadioButton("Fill", app.get_adjust() == Adjust_Fill)) {
-                app.set_adjust(Adjust_Fill);
+            if (ImGui::Button("^")) {
+                app.add_pan(0.0, -1.0);
             }
             ImGui::SameLine();
-            if (ImGui::RadioButton("Width", app.get_adjust() == Adjust_Width)) {
-                app.set_adjust(Adjust_Width);
+            if (ImGui::Button("+")) {
+                app.add_zoom(-1.0);
+            }
+
+            if (ImGui::Button("<")) {
+                app.add_pan(-1.0, 0.0);
             }
             ImGui::SameLine();
-            if (ImGui::RadioButton("Height",
-                                   app.get_adjust() == Adjust_Height)) {
-                app.set_adjust(Adjust_Height);
+            if (ImGui::Button("v")) {
+                app.add_pan(0.0, 1.0);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button(">")) {
+                app.add_pan(1.0, 0.0);
             }
             ImGui::Unindent();
         }
@@ -107,9 +118,6 @@ int main(int, char **) {
             }
         }
 
-        if (ImGui::Button("Quit")) {
-            running = false;
-        }
         ImGui::End();
         sdl.clear();
         app.draw();
