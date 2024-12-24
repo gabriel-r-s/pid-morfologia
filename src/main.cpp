@@ -74,6 +74,10 @@ int main(int, char **) {
             if (ImGui::Button("+")) {
                 app.add_zoom(-1.0);
             }
+            ImGui::SameLine();
+            if (ImGui::Button("=")) {
+                app.reset_zoom_pan();
+            }
 
             if (ImGui::Button("<")) {
                 app.add_pan(-1.0, 0.0);
