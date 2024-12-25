@@ -49,8 +49,8 @@ class App {
     }
 
     void add_pan(float x, float y) {
-        crop_rect.x += x * image_w / 10;
-        crop_rect.y += y * image_h / 10;
+        crop_rect.x += x * image_w / 10 / zoom;
+        crop_rect.y += y * image_h / 10 / zoom;
         recrop();
     }
 

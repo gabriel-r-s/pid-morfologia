@@ -27,7 +27,34 @@ int main(int, char **) {
                 case SDLK_ESCAPE:
                     running = false;
                     break;
+                case SDLK_w:
+                case SDLK_UP:
+                    app.add_pan(0, -1);
+                    break;
+                case SDLK_s:
+                case SDLK_DOWN:
+                    app.add_pan(0, 1);
+                    break;
+                case SDLK_a:
+                case SDLK_LEFT:
+                    app.add_pan(-1, 0);
+                    break;
+                case SDLK_d:
+                case SDLK_RIGHT:
+                    app.add_pan(1, 0);
+                    break;
+                case SDLK_q:
+                    app.add_zoom(1.0);
+                    break;
+                case SDLK_e:
+                    app.add_zoom(-1.0);
+                    break;
                 }
+            case SDL_MOUSEWHEEL: {
+                float amount = sdl.event.wheel.preciseY;
+                app.add_zoom(amount);
+                break;
+            }
             }
         }
         imgui_begin();
