@@ -66,6 +66,10 @@ class App {
         this->morphological_operation = operation;
     }
 
+    Morphological_Operation get_morphological_operation() {
+        return morphological_operation;
+    }
+
     void add_zoom(float z) {
         zoom -= z * 0.1;
         zoom = std::max(zoom, 1.0f);

@@ -11,12 +11,15 @@
 
 #define NOTHING 0xFFFFFFFF
 
+
 enum Morphological_Operation {
     EROSION,
     DILATION,
     OPENING,
     CLOSURE
 };
+
+const char* MORPHOLOGICAL_OPS_NAMES[] = {"EROSION", "DILATION", "OPENING", "CLOSURE"};
 
 struct Image_Kernel {
     std::vector<uint8_t> pixels;

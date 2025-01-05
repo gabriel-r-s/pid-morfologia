@@ -1,6 +1,9 @@
 #include "imgui/imgui.h"
+#include "processing.hpp"
 #include "sdlg.hpp"
 #include "app.hpp"
+
+
 
 int main(int, char **) {
     Sdl sdl;
@@ -85,6 +88,24 @@ int main(int, char **) {
 
         if (wants_load_image) {
             failed_load = !app.load_image(image_path);
+        }
+
+        if (ImGui::BeginCombo("##combo", MORPHOLOGICAL_OPS_NAMES[app.get_morphological_operation()])) // The second parameter is the label previewed before opening the combo.
+        {
+            if (ImGui::Selectable("EROSION", app.get_morphological_operation() == EROSION)) {
+                app.change_morphological_operation(EROSION);
+            }
+            if (ImGui::Selectable("DILATION", app.get_morphological_operation() == DILATION)) {
+                app.change_morphological_operation(DILATION);
+            }
+            if (ImGui::Selectable("OPENING", app.get_morphological_operation() == OPENING)) {
+                app.change_morphological_operation(OPENING);
+            }
+            if (ImGui::Selectable("CLOSURE", app.get_morphological_operation() == CLOSURE)) {
+                app.change_morphological_operation(CLOSURE);
+            }
+
+            ImGui::EndCombo();
         }
 
         if (ImGui::CollapsingHeader("Zoom & Pan",
