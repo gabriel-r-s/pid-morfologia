@@ -1,17 +1,22 @@
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_surface.h>
 #include <algorithm>
 #include <vector>
+#include "processing.hpp"
 #include "sdlg.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <cstdint>
 
 class App {
+    Morphological_Operation morphological_operation = EROSION;
     Sdl *sdl;
     SDL_Texture *image, *processed;
     int image_w, image_h;
     SDL_Rect dest_rect;
     SDL_Rect crop_rect;
     float zoom;
+
 
   public:
     std::vector<uint8_t> kernel;
@@ -40,7 +45,26 @@ class App {
         kernel.resize(w * h);
     }
 
-    void apply_kernel() {}
+    void apply_kernel() {
+        switch (this->morphological_operation) {
+            case EROSION:
+                erode_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
+                break;
+            case DILATION:
+                dilate_texture(processed);
+                break;
+            case OPENING:
+                apply_opening_to_image(processed);
+                break;
+            case CLOSURE:
+                apply_closing_to_image(processed);
+                break;
+        }
+    }
+
+    void change_morphological_operation(Morphological_Operation operation) {
+        this->morphological_operation = operation;
+    }
 
     void add_zoom(float z) {
         zoom -= z * 0.1;
@@ -91,9 +115,17 @@ class App {
     }
 
     void reset_image() {
-        SDL_SetRenderTarget(sdl->renderer, processed);
-        SDL_RenderCopy(sdl->renderer, image, nullptr, nullptr);
-        SDL_SetRenderTarget(sdl->renderer, nullptr);
+        void *pixels;
+        int pitch;
+        SDL_Texture *target = SDL_CreateTexture(sdl->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, image_w, image_h);
+        SDL_SetRenderTarget(sdl->renderer, target);
+        SDL_RenderCopy(sdl->renderer, image, NULL, NULL);
+        if (SDL_LockTexture(processed, NULL, &pixels, &pitch) == 0) {
+            SDL_RenderReadPixels(sdl->renderer, NULL, SDL_PIXELFORMAT_RGBA8888, pixels, pitch);
+            SDL_UnlockTexture(processed);
+        }
+        SDL_DestroyTexture(target);
+        SDL_SetRenderTarget(sdl->renderer, NULL);
         crop_rect = {0, 0, image_w, image_h};
     }
 
@@ -109,7 +141,7 @@ class App {
         int w, h;
         SDL_QueryTexture(image, nullptr, nullptr, &w, &h);
         processed = SDL_CreateTexture(sdl->renderer, SDL_PIXELFORMAT_RGBA8888,
-                                      SDL_TEXTUREACCESS_TARGET, w, h);
+                                      SDL_TEXTUREACCESS_STREAMING, w, h);
         image_w = w;
         image_h = h;
         readjust();
