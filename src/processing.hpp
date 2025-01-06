@@ -35,7 +35,7 @@ Uint32 get_square_mean(Uint32 *pixels, int x, int y, int width, int height, int 
     for (int i = y - 1; i < y + 1; i++) {
         for (int j = x - 1; j < x + 1; j++) {
             if (i > -1 && j > -1 && i < height && j < width) {
-                pixels_amount += 1;
+                pixels_amount++;
                 color_mean.r += (pixels[i * pitch + j] >> 24) & 0xFF;
                 color_mean.g += (pixels[i * pitch + j] >> 16) & 0xFF;
                 color_mean.b += (pixels[i * pitch + j] >> 8) & 0xFF;
@@ -43,10 +43,10 @@ Uint32 get_square_mean(Uint32 *pixels, int x, int y, int width, int height, int 
             }
         }
     }
-    return ((Uint32)(color_mean.r / (float)pixels_amount) << 24)
-        | ((Uint32)(color_mean.g / (float)pixels_amount) << 16)
-        | ((Uint32)(color_mean.b / (float)pixels_amount) << 8)
-        | 0xFF;
+    return ((Uint32)((float)color_mean.r / (float)pixels_amount) << 24)
+        | ((Uint32)((float)color_mean.g / (float)pixels_amount) << 16)
+        | ((Uint32)((float)color_mean.b / (float)pixels_amount) << 8)
+        | 255;
 }
 
 void erode_texture(SDL_Texture *texture, int image_width, int image_height, Image_Kernel kernel)
@@ -143,14 +143,16 @@ void dilate_texture(SDL_Texture *texture, int image_width, int image_height, Ima
     }
 }
 
-void apply_opening_to_image(SDL_Texture *texture)
+void apply_opening_to_image(SDL_Texture *texture, int image_width, int image_height, Image_Kernel kernel)
 {
-
+    erode_texture(texture, image_width, image_height, kernel);
+    dilate_texture(texture, image_width, image_height, kernel);
 }
 
-void apply_closing_to_image(SDL_Texture *texture)
+void apply_closing_to_image(SDL_Texture *texture, int image_width, int image_height, Image_Kernel kernel)
 {
-
+    dilate_texture(texture, image_width, image_height, kernel);
+    erode_texture(texture, image_width, image_height, kernel);
 }
 
 #endif

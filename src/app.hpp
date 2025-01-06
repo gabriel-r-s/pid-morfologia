@@ -54,10 +54,10 @@ class App {
                 dilate_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
                 break;
             case OPENING:
-                apply_opening_to_image(processed);
+                apply_opening_to_image(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
                 break;
             case CLOSURE:
-                apply_closing_to_image(processed);
+                apply_closing_to_image(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
                 break;
         }
     }
