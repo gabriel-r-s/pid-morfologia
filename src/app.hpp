@@ -51,7 +51,7 @@ class App {
                 erode_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
                 break;
             case DILATION:
-                dilate_texture(processed);
+                dilate_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
                 break;
             case OPENING:
                 apply_opening_to_image(processed);
