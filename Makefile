@@ -21,4 +21,6 @@ build/imgui.o:
 .PHONY: clean
 clean:
 	rm ./build/*
- 
+
+run: build/imgui.o
+	$(CXX) $(CXXFLAGS) $(exec) $(src) $(objects) $(libs)  $(includes) && ./build/main
