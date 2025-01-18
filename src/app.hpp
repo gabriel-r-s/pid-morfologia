@@ -118,6 +118,8 @@ class App {
         dest_rect = {int(new_x), int(new_y), int(new_w), int(new_h)};
     }
 
+
+
     void reset_image() {
         void *pixels;
         int pitch;
@@ -126,6 +128,10 @@ class App {
         SDL_RenderCopy(sdl->renderer, image, NULL, NULL);
         if (SDL_LockTexture(processed, NULL, &pixels, &pitch) == 0) {
             SDL_RenderReadPixels(sdl->renderer, NULL, SDL_PIXELFORMAT_RGBA8888, pixels, pitch);
+            Uint32 format;
+            int access, w, h;
+            SDL_QueryTexture(processed, &format, &access, &w, &h);
+            convert_to_binary(pixels, pitch, image_w, image_h, format);
             SDL_UnlockTexture(processed);
         }
         SDL_DestroyTexture(target);

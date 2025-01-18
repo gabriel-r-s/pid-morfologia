@@ -8,7 +8,7 @@
 #include <vector>
 
 #define NOTHING 0xFFFFFFFF
-
+#define SOMETHING 0x00000000
 
 enum Morphological_Operation {
     EROSION,
@@ -129,7 +129,7 @@ void dilate_texture(SDL_Texture *texture, int image_width, int image_height, Ima
                     }
                 }
                 if (should_dilate) {
-                    pixel_array_copy[y * pitch_in_pixels + x] = get_square_mean(pixel_array, x, y, image_width, image_height, pitch_in_pixels);
+                    pixel_array_copy[y * pitch_in_pixels + x] = SOMETHING;
                     // pixel_array_copy[y * pitch_in_pixels + x] = ((Uint32)color_mean.a << 24) | ((Uint32)color_mean.r << 16) | ((Uint32)color_mean.g << 8) | (Uint32)color_mean.b;
                 }
             }
@@ -153,6 +153,26 @@ void apply_closing_to_image(SDL_Texture *texture, int image_width, int image_hei
 {
     dilate_texture(texture, image_width, image_height, kernel);
     erode_texture(texture, image_width, image_height, kernel);
+}
+
+void convert_to_binary(void *pixels, int pitch, int image_width, int image_height, Uint32 format, Uint8 threshold = 128) {
+
+    Uint32 *pixels_array = (Uint32 *)pixels;
+    for (int y = 0; y < image_height; y++) {
+        for (int x = 0; x < image_width; x++) {
+            Uint32 pixel = pixels_array[y * image_width + x];
+
+            Uint8 r, g, b;
+            SDL_PixelFormat *pixel_format = SDL_AllocFormat(format);
+            SDL_GetRGB(pixel, pixel_format, &r, &g, &b);
+
+            Uint8 brightness = (Uint8)((r + g + b) / 3);
+
+            Uint32 new_pixel = (brightness > threshold) ? SDL_MapRGB(pixel_format, 255, 255, 255)
+            : SDL_MapRGB(pixel_format, 0, 0, 0);
+            pixels_array[y * image_width + x] = new_pixel;
+        }
+    }
 }
 
 #endif
