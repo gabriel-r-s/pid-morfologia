@@ -17,15 +17,15 @@ class App {
     SDL_Rect crop_rect;
     float zoom;
 
-
   public:
+    int threshold;
     std::vector<uint8_t> kernel;
     size_t kernel_width, kernel_height;
     int kernel_center_x = 1, kernel_center_y = 1;
 
     App(Sdl *sdl)
         : sdl(sdl), image(nullptr), processed(nullptr), image_w(0), image_h(0),
-          dest_rect({0, 0, 0, 0}), zoom(1.0) {
+          dest_rect({0, 0, 0, 0}), zoom(1.0), threshold(128) {
         kernel = {0, 1, 0, 1, 1, 1, 0, 1, 0};
         kernel_width = 3;
         kernel_height = 3;
@@ -48,18 +48,26 @@ class App {
 
     void apply_kernel() {
         switch (this->morphological_operation) {
-            case EROSION:
-                erode_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, kernel_center_x, kernel_center_y});
-                break;
-            case DILATION:
-                dilate_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, kernel_center_x, kernel_center_y});
-                break;
-            case OPENING:
-                apply_opening_to_image(processed, image_w, image_h, {kernel, kernel_width, kernel_height, kernel_center_x, kernel_center_y});
-                break;
-            case CLOSURE:
-                apply_closing_to_image(processed, image_w, image_h, {kernel, kernel_width, kernel_height, kernel_center_x, kernel_center_y});
-                break;
+        case EROSION:
+            erode_texture(processed, image_w, image_h,
+                          {kernel, kernel_width, kernel_height, kernel_center_x,
+                           kernel_center_y});
+            break;
+        case DILATION:
+            dilate_texture(processed, image_w, image_h,
+                           {kernel, kernel_width, kernel_height,
+                            kernel_center_x, kernel_center_y});
+            break;
+        case OPENING:
+            apply_opening_to_image(processed, image_w, image_h,
+                                   {kernel, kernel_width, kernel_height,
+                                    kernel_center_x, kernel_center_y});
+            break;
+        case CLOSURE:
+            apply_closing_to_image(processed, image_w, image_h,
+                                   {kernel, kernel_width, kernel_height,
+                                    kernel_center_x, kernel_center_y});
+            break;
         }
     }
 
@@ -119,20 +127,22 @@ class App {
         dest_rect = {int(new_x), int(new_y), int(new_w), int(new_h)};
     }
 
-
-
     void reset_image() {
         void *pixels;
         int pitch;
-        SDL_Texture *target = SDL_CreateTexture(sdl->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, image_w, image_h);
+        SDL_Texture *target =
+            SDL_CreateTexture(sdl->renderer, SDL_PIXELFORMAT_RGBA8888,
+                              SDL_TEXTUREACCESS_TARGET, image_w, image_h);
         SDL_SetRenderTarget(sdl->renderer, target);
         SDL_RenderCopy(sdl->renderer, image, NULL, NULL);
         if (SDL_LockTexture(processed, NULL, &pixels, &pitch) == 0) {
-            SDL_RenderReadPixels(sdl->renderer, NULL, SDL_PIXELFORMAT_RGBA8888, pixels, pitch);
+            SDL_RenderReadPixels(sdl->renderer, NULL, SDL_PIXELFORMAT_RGBA8888,
+                                 pixels, pitch);
             Uint32 format;
             int access, w, h;
             SDL_QueryTexture(processed, &format, &access, &w, &h);
-            convert_to_binary(pixels, pitch, image_w, image_h, format);
+            convert_to_binary(pixels, pitch, image_w, image_h, format,
+                              threshold);
             SDL_UnlockTexture(processed);
         }
         SDL_DestroyTexture(target);

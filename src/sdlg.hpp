@@ -15,7 +15,7 @@ void imgui_begin() {
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
-    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::Begin("Menu", nullptr);
 }
 
 struct Sdl {

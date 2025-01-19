@@ -3,8 +3,6 @@
 #include "sdlg.hpp"
 #include "app.hpp"
 
-
-
 int main(int, char **) {
     Sdl sdl;
     App app(&sdl);
@@ -76,11 +74,11 @@ int main(int, char **) {
             ImGui::Text("(failed to load)");
         }
 
-        wants_load_image |= ImGui::Button("Load");
+        ImGui::Text("Threshold: ");
         ImGui::SameLine();
-        if (ImGui::Button("Apply")) {
-            app.apply_kernel();
-        }
+        ImGui::SliderInt("##threshold", &app.threshold, 0, 255);
+
+        wants_load_image |= ImGui::Button("Load");
         ImGui::SameLine();
         if (ImGui::Button("Reset")) {
             app.reset_image();
@@ -88,24 +86,6 @@ int main(int, char **) {
 
         if (wants_load_image) {
             failed_load = !app.load_image(image_path);
-        }
-
-        if (ImGui::BeginCombo("##combo", MORPHOLOGICAL_OPS_NAMES[app.get_morphological_operation()])) // The second parameter is the label previewed before opening the combo.
-        {
-            if (ImGui::Selectable("EROSION", app.get_morphological_operation() == EROSION)) {
-                app.change_morphological_operation(EROSION);
-            }
-            if (ImGui::Selectable("DILATION", app.get_morphological_operation() == DILATION)) {
-                app.change_morphological_operation(DILATION);
-            }
-            if (ImGui::Selectable("OPENING", app.get_morphological_operation() == OPENING)) {
-                app.change_morphological_operation(OPENING);
-            }
-            if (ImGui::Selectable("CLOSURE", app.get_morphological_operation() == CLOSURE)) {
-                app.change_morphological_operation(CLOSURE);
-            }
-
-            ImGui::EndCombo();
         }
 
         if (ImGui::CollapsingHeader("Zoom & Pan",
@@ -155,6 +135,7 @@ int main(int, char **) {
                 }
             }
             ImGui::EndTable();
+            ImGui::SameLine();
             bool wants_resize_kernel = false;
             wants_resize_kernel |= ImGui::Button("Resize");
             ImGui::SameLine();
@@ -163,15 +144,56 @@ int main(int, char **) {
                 ImGui::InputInt2("##kernel_width", kernel_dim,
                                  ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::PopItemWidth();
-            ImGui::Unindent();
 
             if (wants_resize_kernel) {
                 app.resize_kernel(kernel_dim[0], kernel_dim[1]);
             }
-        }
+            ImGui::PushItemWidth(128.0);
+            if (ImGui::BeginCombo(
+                    "##combo",
+                    MORPHOLOGICAL_OPS_NAMES
+                        [app.get_morphological_operation()])) // The second
+                                                              // parameter is
+                                                              // the label
+                                                              // previewed
+                                                              // before opening
+                                                              // the combo.
+            {
+                if (ImGui::Selectable("EROSION",
+                                      app.get_morphological_operation() ==
+                                          EROSION)) {
+                    app.change_morphological_operation(EROSION);
+                }
+                if (ImGui::Selectable("DILATION",
+                                      app.get_morphological_operation() ==
+                                          DILATION)) {
+                    app.change_morphological_operation(DILATION);
+                }
+                if (ImGui::Selectable("OPENING",
+                                      app.get_morphological_operation() ==
+                                          OPENING)) {
+                    app.change_morphological_operation(OPENING);
+                }
+                if (ImGui::Selectable("CLOSURE",
+                                      app.get_morphological_operation() ==
+                                          CLOSURE)) {
+                    app.change_morphological_operation(CLOSURE);
+                }
 
-        ImGui::InputInt("Center X", &app.kernel_center_x);
-        ImGui::InputInt("Center Y", &app.kernel_center_y);
+                ImGui::EndCombo();
+            }
+            ImGui::PopItemWidth();
+
+            ImGui::SameLine();
+            if (ImGui::Button("Apply")) {
+                app.apply_kernel();
+            }
+            ImGui::PushItemWidth(128.0);
+            ImGui::InputInt("Center X", &app.kernel_center_x);
+            ImGui::InputInt("Center Y", &app.kernel_center_y);
+            ImGui::PopItemWidth();
+            ImGui::Unindent();
+        }
 
         ImGui::End();
         sdl.clear();
