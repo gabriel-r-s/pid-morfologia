@@ -170,6 +170,9 @@ int main(int, char **) {
             }
         }
 
+        ImGui::InputInt("Center X", &app.kernel_center_x);
+        ImGui::InputInt("Center Y", &app.kernel_center_y);
+
         ImGui::End();
         sdl.clear();
         app.draw();

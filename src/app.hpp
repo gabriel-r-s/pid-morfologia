@@ -21,6 +21,7 @@ class App {
   public:
     std::vector<uint8_t> kernel;
     size_t kernel_width, kernel_height;
+    int kernel_center_x = 1, kernel_center_y = 1;
 
     App(Sdl *sdl)
         : sdl(sdl), image(nullptr), processed(nullptr), image_w(0), image_h(0),
@@ -48,16 +49,16 @@ class App {
     void apply_kernel() {
         switch (this->morphological_operation) {
             case EROSION:
-                erode_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
+                erode_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, kernel_center_x, kernel_center_y});
                 break;
             case DILATION:
-                dilate_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
+                dilate_texture(processed, image_w, image_h, {kernel, kernel_width, kernel_height, kernel_center_x, kernel_center_y});
                 break;
             case OPENING:
-                apply_opening_to_image(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
+                apply_opening_to_image(processed, image_w, image_h, {kernel, kernel_width, kernel_height, kernel_center_x, kernel_center_y});
                 break;
             case CLOSURE:
-                apply_closing_to_image(processed, image_w, image_h, {kernel, kernel_width, kernel_height, 1, 1});
+                apply_closing_to_image(processed, image_w, image_h, {kernel, kernel_width, kernel_height, kernel_center_x, kernel_center_y});
                 break;
         }
     }
