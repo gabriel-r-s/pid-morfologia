@@ -52,6 +52,9 @@ int main(int, char **) {
                     break;
                 }
             case SDL_MOUSEWHEEL: {
+                if (ImGui::GetIO().WantCaptureMouse) {
+                    continue;
+                }
                 float amount = sdl.event.wheel.preciseY;
                 app.add_zoom(amount);
                 break;
@@ -135,19 +138,21 @@ int main(int, char **) {
                 }
             }
             ImGui::EndTable();
-            ImGui::SameLine();
-            bool wants_resize_kernel = false;
-            wants_resize_kernel |= ImGui::Button("Resize");
+
+            ImGui::Text("Size  :");
             ImGui::SameLine();
             ImGui::PushItemWidth(64.0);
-            wants_resize_kernel |=
-                ImGui::InputInt2("##kernel_width", kernel_dim,
-                                 ImGuiInputTextFlags_EnterReturnsTrue);
-            ImGui::PopItemWidth();
-
-            if (wants_resize_kernel) {
+            if (ImGui::InputInt2("##kernel_width", kernel_dim)) {
                 app.resize_kernel(kernel_dim[0], kernel_dim[1]);
             }
+            ImGui::PopItemWidth();
+
+            ImGui::PushItemWidth(64.0);
+            ImGui::Text("Center:");
+            ImGui::SameLine();
+            ImGui::InputInt2("##kernel_center", app.kernel_center);
+            ImGui::PopItemWidth();
+
             ImGui::PushItemWidth(128.0);
             if (ImGui::BeginCombo(
                     "##combo",
@@ -183,15 +188,10 @@ int main(int, char **) {
                 ImGui::EndCombo();
             }
             ImGui::PopItemWidth();
-
             ImGui::SameLine();
             if (ImGui::Button("Apply")) {
                 app.apply_kernel();
             }
-            ImGui::PushItemWidth(128.0);
-            ImGui::InputInt("Center X", &app.kernel_center_x);
-            ImGui::InputInt("Center Y", &app.kernel_center_y);
-            ImGui::PopItemWidth();
             ImGui::Unindent();
         }
 

@@ -21,12 +21,13 @@ class App {
     int threshold;
     std::vector<uint8_t> kernel;
     size_t kernel_width, kernel_height;
-    int kernel_center_x = 1, kernel_center_y = 1;
+    int kernel_center[2] = {1, 1};
+    /*int kernel_center[0] = 1, kernel_center[1] = 1;*/
 
     App(Sdl *sdl)
         : sdl(sdl), image(nullptr), processed(nullptr), image_w(0), image_h(0),
           dest_rect({0, 0, 0, 0}), zoom(1.0), threshold(128) {
-        kernel = {0, 1, 0, 1, 1, 1, 0, 1, 0};
+        kernel = {1, 1, 1, 1, 1, 1, 1, 1, 1};
         kernel_width = 3;
         kernel_height = 3;
     }
@@ -44,29 +45,30 @@ class App {
         kernel_height = h;
         kernel.clear();
         kernel.resize(w * h);
+        std::fill(kernel.begin(), kernel.end(), true);
     }
 
     void apply_kernel() {
         switch (this->morphological_operation) {
         case EROSION:
             erode_texture(processed, image_w, image_h,
-                          {kernel, kernel_width, kernel_height, kernel_center_x,
-                           kernel_center_y});
+                          {kernel, kernel_width, kernel_height,
+                           kernel_center[0], kernel_center[1]});
             break;
         case DILATION:
             dilate_texture(processed, image_w, image_h,
                            {kernel, kernel_width, kernel_height,
-                            kernel_center_x, kernel_center_y});
+                            kernel_center[0], kernel_center[1]});
             break;
         case OPENING:
             apply_opening_to_image(processed, image_w, image_h,
                                    {kernel, kernel_width, kernel_height,
-                                    kernel_center_x, kernel_center_y});
+                                    kernel_center[0], kernel_center[1]});
             break;
         case CLOSURE:
             apply_closing_to_image(processed, image_w, image_h,
                                    {kernel, kernel_width, kernel_height,
-                                    kernel_center_x, kernel_center_y});
+                                    kernel_center[0], kernel_center[1]});
             break;
         }
     }
